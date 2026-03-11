@@ -10,7 +10,11 @@
       "Bash(jq .ads[0])",
       "Bash(jq .campaigns[0])",
       "Read(//usr/**)",
-      "Bash(pkg-config --modversion nlohmann_json)"
+      "Bash(pkg-config --modversion nlohmann_json)",
+      "Bash(cmake -B build -S .)",
+      "Bash(cmake --build build)",
+      "Bash(ctest --output-on-failure)",
+      "Bash(ctest --output-on-failure -R \"AdIndexTest\")"
     ],
     "additionalDirectories": [
       "/home/airprofly/.claude/skills",
