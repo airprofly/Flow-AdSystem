@@ -1,5 +1,12 @@
 {
   "permissions": {
+    "allow": [
+      "Bash(mkdir -p build)",
+      "Bash(cmake ..)",
+      "Bash(make ad_generator VERBOSE=1)",
+      "Bash(./bin/ad_generator --help)",
+      "mcp__linkup-mcp-server__linkup-fetch"
+    ],
     "additionalDirectories": [
       "/home/airprofly/.claude/skills",
       "/home/airprofly/codeFolder/FastMatch-Ad"
