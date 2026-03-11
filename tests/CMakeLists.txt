@@ -54,6 +54,23 @@ target_include_directories(integration_test_openrtb_indexing
         ${CMAKE_SOURCE_DIR}
 )
 
+# 频控模块测试
+add_executable(frequency_test
+    unit/frequency_test.cpp
+)
+
+target_link_libraries(frequency_test
+    PRIVATE
+        frequency_control
+        GTest::gtest
+        GTest::gtest_main
+)
+
+target_include_directories(frequency_test
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}
+)
+
 # 添加测试
 include(GoogleTest)
 gtest_discover_tests(openrtb_parser_test
@@ -67,6 +84,11 @@ gtest_discover_tests(indexing_test
 )
 
 gtest_discover_tests(integration_test_openrtb_indexing
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
+    DISCOVERY_MODE PRE_TEST
+)
+
+gtest_discover_tests(frequency_test
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
     DISCOVERY_MODE PRE_TEST
 )

@@ -52,5 +52,6 @@ FetchContent_MakeAvailable(rapidjson)
 # 包含子目录
 add_subdirectory(core/openrtb)
 add_subdirectory(core/indexing)
+add_subdirectory(core/frequency)
 add_subdirectory(tests)
 add_subdirectory(data)
