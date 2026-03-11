@@ -92,3 +92,51 @@ gtest_discover_tests(frequency_test
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
     DISCOVERY_MODE PRE_TEST
 )
+
+# Pacing 模块测试
+add_executable(pacing_test
+    unit/test_pacing.cpp
+)
+
+target_link_libraries(pacing_test
+    PRIVATE
+        pacing
+        GTest::gtest
+        GTest::gtest_main
+)
+
+target_include_directories(pacing_test
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/core/pacing
+)
+
+gtest_discover_tests(pacing_test
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
+    DISCOVERY_MODE PRE_TEST
+)
+
+# 核心模块集成测试: 索引 + 频控 + Pacing
+add_executable(core_modules_integration_test
+    integration/integration_test_index_frequency_pacing.cpp
+)
+
+target_link_libraries(core_modules_integration_test
+    PRIVATE
+        openrtb_parser
+        ad_index
+        frequency_control
+        pacing
+        GTest::gtest
+        GTest::gtest_main
+)
+
+target_include_directories(core_modules_integration_test
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}
+)
+
+gtest_discover_tests(core_modules_integration_test
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
+    DISCOVERY_MODE PRE_TEST
+)
