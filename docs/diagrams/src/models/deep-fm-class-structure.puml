@@ -1,0 +1,109 @@
+@startuml deep-fm-class-structure
+title DeepFM 模型类层次结构
+caption PyTorch 实现的核心组件及其关系
+
+skinparam class {
+    BackgroundColor White
+    BorderColor #333333
+    FontSize 11
+}
+
+class "FeaturesEmbedding" as Embedding #LightBlue {
+    - field_dims: List[int]
+    - embed_dim: int
+    - embedding: nn.ModuleList
+    + forward(X: Tensor) -> Tensor
+    note: 为每个稀疏特征\n生成嵌入向量
+}
+
+class "FMFirstOrder" as FMFirst #LightGreen {
+    - field_dims: List[int]
+    - linear: nn.Linear
+    + forward(X: Tensor) -> Tensor
+    note: 线性部分
+}
+
+class "FMSecondOrder" as FMSecond #LightGreen {
+    - field_dims: List[int]
+    - embed_dim: int
+    + forward(X: Tensor) -> Tensor
+    note: 特征交叉
+}
+
+class "FactorizationMachine" as FM #LightGreen {
+    - first_order: FMFirstOrder
+    - second_order: FMSecondOrder
+    + forward(X: Tensor) -> Tensor
+}
+
+class "MultiLayerPerceptron" as MLP #LightCoral {
+    - layers: nn.ModuleList
+    - dropout: float
+    + forward(X: Tensor) -> Tensor
+    note: 深度神经网络
+}
+
+class "DeepComponent" as Deep #LightCoral {
+    - embedding: FeaturesEmbedding
+    - mlp: MultiLayerPerceptron
+    + forward(X: Tensor) -> Tensor
+}
+
+class "DeepFMModel" as DeepFM #LightYellow {
+    - embedding: FeaturesEmbedding
+    - fm: FactorizationMachine
+    - deep: MultiLayerPerceptron
+    + forward(X: Tensor) -> Tensor
+    note: 组合 FM 和 Deep
+}
+
+class "CTRModel" as CTRModel #LightYellow {
+    - deepfm: DeepFMModel
+    + forward(X: Tensor) -> Tensor
+    + predict(X: Tensor) -> Tensor
+    note: 输出 CTR 概率
+}
+
+Embedding <|-- FM
+Embedding <|-- Deep
+
+FMFirst <|-- FM
+FMSecond <|-- FM
+
+MLP <|-- Deep
+
+FM +-- DeepFM
+Deep +-- DeepFM
+
+DeepFM <|-- CTRModel
+
+note right of Embedding
+  <b>嵌入层 (共享)</b>
+  - 为每个类别特征
+    生成稠密向量
+  - 参数高效
+end note
+
+note right of FM
+  <b>FM 组件</b>
+  - 一阶: 线性部分
+  - 二阶: 特征交叉
+  - 低阶交互
+end note
+
+note right of Deep
+  <b>Deep 组件</b>
+  - MLP 多层感知机
+  - 高阶非线性
+  - 复杂模式
+end note
+
+note bottom of DeepFM
+  <b>关键设计</b>
+  1. 嵌入层共享
+  2. FM + Deep 并行
+  3. 端到端训练
+  4. 低高阶组合
+end note
+
+@enduml

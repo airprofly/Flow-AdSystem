@@ -36,6 +36,14 @@ set(INSTALL_GTEST OFF CACHE BOOL "" FORCE) # 阻止安装到系统
 FetchContent_MakeAvailable(googletest)
 
 FetchContent_Declare(
+  onnxruntime
+  URL https://github.com/microsoft/onnxruntime/releases/download/v1.17.1/onnxruntime-linux-x64-1.17.1.tgz
+)
+
+# 2. 使其可用
+FetchContent_MakeAvailable(onnxruntime)
+
+FetchContent_Declare(
   rapidjson
   GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
   GIT_TAG        master  # 或者指定具体版本号如 v1.1.0

@@ -1,0 +1,105 @@
+@startuml deep-fm-forward-pass
+title DeepFM 前向传播流程图
+caption 展示从输入到 CTR 预估的完整数据流动过程
+
+skinparam activity {
+    BackgroundColor White
+    FontSize 11
+}
+
+start
+
+:输入数据;
+
+note right
+  <b>稀疏特征</b>: 用户ID、广告ID
+  <b>稠密特征</b>: 年龄、时间
+end note
+
+:特征预处理;
+
+split
+    :稀疏特征;
+
+    :嵌入层查找;
+
+    :生成嵌入向量;
+
+    split
+        :FM 一阶项;
+
+        :线性加权求和;
+
+        note right #LightGreen
+          <b>一阶交互</b>
+          捕捉单个特征的
+          直接贡献
+        end note
+
+    split again
+        :FM 二阶项;
+
+        :特征向量交叉;
+
+        note right #LightGreen
+          <b>二阶交互</b>
+          自动学习特征组合
+          无需人工特征工程
+        end note
+
+    end split
+
+    :FM 输出];
+
+split again
+    :稠密特征;
+
+    :特征拼接;
+
+    :Deep 输入层];
+
+    :隐藏层 1\nReLU + Dropout];
+
+    :隐藏层 2\nReLU + Dropout];
+
+    :隐藏层 N\nReLU + Dropout];
+
+    note right #LightCoral
+      <b>深度网络</b>
+      学习高阶非线性
+      特征交互
+    end note
+
+    :Deep 输出];
+end split
+
+:组合层];
+
+:y = y_FM + y_Deep];
+
+note right #LightYellow
+  <b>组合策略</b>
+  低阶(FM) + 高阶(Deep)
+  端到端联合训练
+end note
+
+:输出层 Sigmoid];
+
+:CTR 预估值];
+
+stop
+
+legend right
+  |#LightBlue| 输入与预处理 |
+  |#LightGreen| FM 组件路径 |
+  |#LightCoral| Deep 组件路径 |
+  |#LightYellow| 组合与输出 |
+
+  <b>关键优势</b>
+  - FM: 捕捉低阶特征交互
+  - Deep: 学习高阶复杂模式
+  - 共享嵌入: 参数高效
+  - 端到端: 联合优化
+endlegend
+
+@enduml

@@ -1,0 +1,88 @@
+@startuml deep-fm-architecture
+title DeepFM 模型架构图
+caption 用于 CTR 预估的深度因子分解机模型架构
+
+skinparam component {
+    FontSize 12
+    BackgroundColor White
+    BorderColor #333333
+}
+
+package "输入层" {
+    component "稀疏特征\n用户ID/广告ID/行业ID" as sparse #LightBlue
+    component "稠密特征\n年龄/时间/出价" as dense #LightBlue
+}
+
+package "嵌入层" #LightYellow {
+    component "嵌入向量1" as emb1
+    component "嵌入向量2" as emb2
+    component "嵌入向量3" as emb3
+    component "嵌入向量N" as embN
+    component "嵌入矩阵" as embedding_matrix #Lavender
+}
+
+sparse --> emb1
+sparse --> emb2
+sparse --> emb3
+sparse --> embN
+emb1 --> embedding_matrix
+emb2 --> embedding_matrix
+emb3 --> embedding_matrix
+embN --> embedding_matrix
+dense --> embedding_matrix
+
+package "FM组件" #LightGreen {
+    component "FM一阶项\n线性部分" as fm_first
+    component "FM二阶项\n特征交叉" as fm_second
+}
+
+package "Deep组件" #LightCoral {
+    component "输入层" as deep_input
+    component "隐藏层1\nReLU+Dropout" as hidden1
+    component "隐藏层2\nReLU+Dropout" as hidden2
+    component "隐藏层N\nReLU+Dropout" as hiddenN
+}
+
+embedding_matrix --> fm_first
+embedding_matrix --> fm_second
+embedding_matrix --> deep_input
+
+deep_input --> hidden1
+hidden1 --> hidden2
+hidden2 --> hiddenN
+
+component "组合层" as concat #LightYellow
+
+fm_first --> concat
+fm_second --> concat
+hiddenN --> concat
+
+component "输出层\nSigmoid" as output #LightBlue
+
+concat --> output
+
+component "CTR预估值" as ctr_result #Lavender
+
+output --> ctr_result
+
+note right of fm_second
+  <b>特征交叉机制</b>
+  - 二阶交互自动学习
+  - 无需人工特征工程
+  - 捕捉低阶特征组合
+end note
+
+note right of hiddenN
+  <b>深度网络</b>
+  - 学习高阶非线性
+  - 特征交互
+  - 捕捉复杂模式
+end note
+
+note bottom of concat
+  <b>组合策略</b>
+  FM 输出 + Deep 输出
+  低阶 + 高阶特征交互
+end note
+
+@enduml
