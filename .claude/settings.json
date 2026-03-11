@@ -5,11 +5,17 @@
       "Bash(cmake ..)",
       "Bash(make ad_generator VERBOSE=1)",
       "Bash(./bin/ad_generator --help)",
-      "mcp__linkup-mcp-server__linkup-fetch"
+      "mcp__linkup-mcp-server__linkup-fetch",
+      "Bash(jq .creatives[0])",
+      "Bash(jq .ads[0])",
+      "Bash(jq .campaigns[0])",
+      "Read(//usr/**)",
+      "Bash(pkg-config --modversion nlohmann_json)"
     ],
     "additionalDirectories": [
       "/home/airprofly/.claude/skills",
-      "/home/airprofly/codeFolder/FastMatch-Ad"
+      "/home/airprofly/codeFolder/FastMatch-Ad",
+      "/home/airprofly/codeFolder/work/Flow-AdSystem/core"
     ]
   }
 }
