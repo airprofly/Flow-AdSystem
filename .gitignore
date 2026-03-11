@@ -1,0 +1,8 @@
+# 构建目录
+build/
+
+# IDE
+.idea/
+
+# macOS
+.DS_Store

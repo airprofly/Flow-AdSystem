@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "additionalDirectories": [
+      "/home/airprofly/.claude/skills",
+      "/home/airprofly/codeFolder/FastMatch-Ad"
+    ]
+  }
+}

@@ -1,0 +1,70 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# 源代码文件 - 使用 LF
+*.java text eol=lf
+*.kt text eol=lf
+*.xml text eol=lf
+*.gradle text eol=lf
+*.properties text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.sh text eol=lf
+
+# 文档文件 - 使用 LF
+*.md text eol=lf diff=markdown
+*.txt text eol=lf
+*.csv text eol=lf
+
+# PlantUML 图表文件
+*.puml text eol=lf
+*.plantuml text eol=lf
+
+# 配置文件
+*.toml text eol=lf
+*.ini text eol=lf
+*.conf text eol=lf
+
+# Windows 批处理文件 - 使用 CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# 图片文件 - 二进制
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+
+# 压缩文件 - 二进制
+*.zip binary
+*.tar.gz binary
+*.rar binary
+*.7z binary
+
+# 字体文件 - 二进制
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+
+# PDF 文件 - 二进制
+*.pdf binary
+
+# JetBrains IDE
+.idea/* text eol=lf
+
+# VSCode
+.vscode/* text eol=lf
+
+# 数据库文件
+*.db binary
+*.sqlite binary
+
+# 证书和密钥 - 二进制
+*.pem binary
+*.crt binary
+*.key binary
+*.keystore binary

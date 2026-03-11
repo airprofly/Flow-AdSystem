@@ -1,0 +1,103 @@
+@startuml ad-system-architecture
+title 广告投放系统总体架构图
+caption Ad Delivery System Architecture Overview
+
+' 设置图形尺寸和 DPI,增加画布空间
+scale 1.2
+
+skinparam backgroundColor #FFFFFF
+skinparam component {
+    FontSize 12
+    BackgroundColor #E3F2FD
+    BorderColor #1976D2
+}
+skinparam package {
+    BackgroundColor #F5F5F5
+    BorderColor #9E9E9E
+    FontColor #424242
+}
+skinparam database {
+    BackgroundColor #FFF3E0
+    BorderColor #FF9800
+}
+skinparam actor {
+    BackgroundColor #E8F5E9
+    BorderColor #4CAF50
+}
+
+' 设置边距
+skinparam padding 20
+skinparam componentPadding 15
+skinparam packagePadding 15
+skinparam packageMargin 50
+skinparam noteMargin 30
+
+package "流量侧" {
+    actor "用户请求" as user
+}
+
+package "接入层" {
+    component "OpenRTB请求处理" as rtb_handler
+}
+
+package "在线服务层" {
+    component "广告索引服务\n(Ad Index)" as index_svc
+    component "频次控制\n(Frequency Cap)" as freq_ctrl
+    component "Pacing模块\n(匀速消费)" as pacing
+    component "点击率预估\n(CTR Predictor)" as ctr_pred
+    component "Ranker排序\n(eCPM排序)" as ranker
+}
+
+package "数据层" {
+    database "广告池\n(10w+ OpenRTB)" as ad_pool
+    database "离线训练模型" as offline_model
+}
+
+' 数据流向
+user --> rtb_handler : OpenRTB请求
+rtb_handler --> index_svc : 广告检索
+index_svc --> ad_pool : 查询广告
+ad_pool --> index_svc : 候选广告集
+
+index_svc --> freq_ctrl : 候选广告
+freq_ctrl --> pacing : 过滤后广告
+pacing --> ctr_pred : 预算内广告
+
+ctr_pred --> ranker : CTR预估
+ranker --> rtb_handler : 排序结果
+rtb_handler --> user : 竞价响应
+
+' 离线训练流程
+offline_model -right-> ctr_pred : 模型更新
+
+note right of ad_pool
+  符合 OpenRTB 协议规范
+  支持自定义构建
+  10w+ 广告数据
+end note
+
+note bottom of ctr_pred
+  离线定期训练 +
+  在线实时预估
+end note
+
+note left of index_svc
+  倒排索引 + 快速检索
+end note
+
+note left of freq_ctrl
+  用户展示计数 +
+  频次规则引擎
+end note
+
+note left of pacing
+  预算消耗控制 +
+  投放速率调节
+end note
+
+note right of ranker
+  eCPM打分 +
+  TopK排序
+end note
+
+@enduml
