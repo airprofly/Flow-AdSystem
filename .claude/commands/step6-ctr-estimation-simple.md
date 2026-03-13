@@ -51,23 +51,23 @@
 ### **Week 1-2: 基础设施搭建**
 
 #### C++ 部分
-- [ ] 实现 C++ 核心数据结构
+- [x] 实现 C++ 核心数据结构
   - `FeatureSpec`: 特征定义(名称/类型/维度)
   - `FeatureContext`: 特征值存储
   - `ModelConfig`: 模型配置
   - `InferenceResult`: 推理结果
 
-- [ ] 实现 C++ 接口层
+- [x] 实现 C++ 接口层
   - `FeatureExtractor`: 特征提取器接口
   - `ModelInferenceEngine`: 推理引擎接口
   - `CTRManager`: CTR 管理器
 
-- [ ] 编写单元测试框架
+- [x] 编写单元测试框架
   - 使用 Google Test
-  - Mock 特征提取器
+  - Mock 特征提取器 (待补充)
 
 #### Python 部分
-- [ ] 搭建 PyTorch 训练环境
+- [x] 搭建 PyTorch 训练环境
   - 安装 PyTorch + PyTorch Lightning
   - 创建项目结构 `python/ctr_training/`
 
@@ -76,9 +76,9 @@
 ### **Week 3-4: 特征工程**
 
 #### C++ 特征提取器实现
-- [ ] `UserFeatureExtractor`: 用户特征(年龄/性别/地域/设备)
-- [ ] `AdFeatureExtractor`: 广告特征(ID/行业/创意类型)
-- [ ] `ContextFeatureExtractor`: 上下文特征(时间/页面/位置)
+- [x] `UserFeatureExtractor`: 用户特征(年龄/性别/地域/设备)
+- [x] `AdFeatureExtractor`: 广告特征(ID/行业/创意类型)
+- [x] `ContextFeatureExtractor`: 上下文特征(时间/页面/位置)
 
 特征示例:
 ```cpp
@@ -99,7 +99,7 @@
 ```
 
 #### Python 特征工程
-- [ ] 实现数据预处理脚本
+- [x] 实现数据预处理脚本
   - 稀疏特征: 类别 → ID 编码
   - 连续特征: Min-Max 归一化
   - 数据格式: Parquet
@@ -109,7 +109,7 @@
 ### **Week 5-6: 离线训练 (Python)**
 
 #### 模型实现
-- [ ] 实现 `DeepFM` 模型
+- [x] 实现 `DeepFM` 模型
   ```python
   # FM 一阶项: 线性部分
   # FM 二阶项: 特征交叉 (Σ(vi · vj))
@@ -138,17 +138,17 @@ FM 一阶    FM 二阶    Deep    │
                            共享嵌入
 ```
 
-- [ ] 实现 `CTRDataModule`
+- [ ] 实现 `CTRDataModule` (当前为原生 PyTorch DataLoader)
   - 训练集/验证集加载
   - Data Loader 配置
 
-- [ ] 实现 `CTRLightningModule`
+- [ ] 实现 `CTRLightningModule` (当前为原生 PyTorch 训练循环)
   - 训练步骤: BCE Loss
   - 验证步骤: AUC + LogLoss
   - 优化器: Adam
 
 #### 训练脚本
-- [ ] `train.py`: 训练入口
+- [x] `train.py`: 训练入口
   ```bash
   python train.py \
     --train-data data/train.parquet \
@@ -158,7 +158,7 @@ FM 一阶    FM 二阶    Deep    │
     --export-onnx
   ```
 
-- [ ] `export_onnx()`: 导出 ONNX 模型
+- [x] `export_onnx()`: 导出 ONNX 模型
   ```python
   torch.onnx.export(
       model,
@@ -169,16 +169,16 @@ FM 一阶    FM 二阶    Deep    │
   ```
 
 #### 验收标准
-- [ ] 训练 AUC > 0.75
-- [ ] 成功导出 ONNX 模型
-- [ ] ONNX 模型验证通过
+- [ ] 训练 AUC > 0.75 (待用固定数据集复核)
+- [x] 成功导出 ONNX 模型
+- [x] ONNX 模型验证通过
 
 ---
 
 ### **Week 7: 在线推理 (C++)**
 
 #### ONNX Runtime 引擎
-- [ ] 实现 `ONNXRuntimeEngine`
+- [x] 实现 `ONNXRuntimeEngine`
   ```cpp
   class ONNXRuntimeEngine : public ModelInferenceEngine {
       // 1. 加载 ONNX 模型
@@ -192,15 +192,15 @@ FM 一阶    FM 二阶    Deep    │
   };
   ```
 
-- [ ] 核心功能
+- [x] 核心功能
   - 模型加载: `Ort::Session`
   - 张量准备: 特征 → ONNX Tensor
   - 推理执行: `session->Run()`
   - 结果提取: Tensor → CTR
 
 #### 性能优化
-- [ ] 启用图优化: `ORT_ENABLE_ALL`
-- [ ] 多线程推理: `SetIntraOpNumThreads`
+- [x] 启用图优化: `ORT_ENABLE_ALL`
+- [x] 多线程推理: `SetIntraOpNumThreads`
 - [ ] SIMD 加速(可选)
 
 #### 验收标准
@@ -212,13 +212,13 @@ FM 一阶    FM 二阶    Deep    │
 ### **Week 8: 集成与 A/B 测试**
 
 #### CTR 管理器完善
-- [ ] 实现多模型支持
+- [x] 实现多模型支持
   ```cpp
   // 支持同时加载多个模型(不同版本)
   // 流量分配: Model A: 20%, Model B: 80%
   ```
 
-- [ ] 实现模型热更新
+- [x] 实现模型热更新
   ```cpp
   bool reload_model(model_name, new_model_path);
   ```
@@ -231,7 +231,7 @@ FM 一阶    FM 二阶    Deep    │
   ```
 
 #### A/B 测试
-- [ ] 流量分流机制
+- [x] 流量分流机制
 - [ ] 监控指标: AUC / LogLoss / 延迟
 - [ ] 对比实验: 新模型 vs 基线
 
@@ -308,10 +308,10 @@ eCPM 计算 = CTR × 出价
 ## ✅ 验收标准
 
 ### 功能验收
-- [ ] 支持离线训练 DeepFM 模型
-- [ ] 支持 ONNX 模型导出和加载
+- [x] 支持离线训练 DeepFM 模型
+- [x] 支持 ONNX 模型导出和加载
 - [ ] 支持在线实时预估 (< 5ms)
-- [ ] 支持模型热更新
+- [x] 支持模型热更新
 - [ ] 支持 A/B 测试(多模型流量分配)
 
 ### 性能验收

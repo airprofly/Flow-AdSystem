@@ -80,6 +80,7 @@ std::vector<Ad> DataLoader::load_ads_from_json(
 
 std::vector<AdCampaign> DataLoader::load_campaigns_from_json(
     const std::string& file_path) {
+    (void)file_path;
     std::vector<AdCampaign> campaigns;
     // TODO: 实现完整的 JSON 解析
     return campaigns;
@@ -87,6 +88,7 @@ std::vector<AdCampaign> DataLoader::load_campaigns_from_json(
 
 std::vector<Creative> DataLoader::load_creatives_from_json(
     const std::string& file_path) {
+    (void)file_path;
     std::vector<Creative> creatives;
     // TODO: 实现完整的 JSON 解析
     return creatives;

@@ -71,28 +71,6 @@ target_include_directories(frequency_test
         ${CMAKE_SOURCE_DIR}
 )
 
-# 添加测试
-include(GoogleTest)
-gtest_discover_tests(openrtb_parser_test
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
-    DISCOVERY_MODE PRE_TEST
-)
-
-gtest_discover_tests(indexing_test
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
-    DISCOVERY_MODE PRE_TEST
-)
-
-gtest_discover_tests(integration_test_openrtb_indexing
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
-    DISCOVERY_MODE PRE_TEST
-)
-
-gtest_discover_tests(frequency_test
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
-    DISCOVERY_MODE PRE_TEST
-)
-
 # Pacing 模块测试
 add_executable(pacing_test
     unit/test_pacing.cpp
@@ -109,11 +87,6 @@ target_include_directories(pacing_test
     PRIVATE
         ${CMAKE_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/core/pacing
-)
-
-gtest_discover_tests(pacing_test
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
-    DISCOVERY_MODE PRE_TEST
 )
 
 # 核心模块集成测试: 索引 + 频控 + Pacing
@@ -136,7 +109,130 @@ target_include_directories(core_modules_integration_test
         ${CMAKE_SOURCE_DIR}
 )
 
+# CTR 模块测试
+add_executable(ctr_test
+    unit/ctr_test.cpp
+)
+
+target_link_libraries(ctr_test
+    PRIVATE
+        ctr_lib
+        GTest::gtest
+        GTest::gtest_main
+)
+
+target_include_directories(ctr_test
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}
+)
+
+target_compile_definitions(ctr_test
+    PRIVATE
+        FLOW_ADSYSTEM_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+)
+
+# CTR 端到端示例
+add_executable(ctr_e2e_test
+    unit/ctr_e2e_test.cpp
+)
+
+target_link_libraries(ctr_e2e_test
+    PRIVATE
+        ctr_lib
+    GTest::gtest
+    GTest::gtest_main
+)
+
+target_include_directories(ctr_e2e_test
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}
+)
+
+target_compile_definitions(ctr_e2e_test
+    PRIVATE
+        FLOW_ADSYSTEM_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+)
+
+# CTR 延迟基准
+add_executable(ctr_latency_benchmark
+    unit/ctr_latency_benchmark.cpp
+)
+
+target_link_libraries(ctr_latency_benchmark
+    PRIVATE
+        ctr_lib
+)
+
+target_include_directories(ctr_latency_benchmark
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}
+)
+
+target_compile_definitions(ctr_latency_benchmark
+    PRIVATE
+        FLOW_ADSYSTEM_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+)
+
+# 添加测试
+include(GoogleTest)
+gtest_discover_tests(openrtb_parser_test
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
+    DISCOVERY_MODE PRE_TEST
+)
+
+gtest_discover_tests(indexing_test
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
+    DISCOVERY_MODE PRE_TEST
+)
+
+gtest_discover_tests(integration_test_openrtb_indexing
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
+    DISCOVERY_MODE PRE_TEST
+)
+
+gtest_discover_tests(frequency_test
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
+    DISCOVERY_MODE PRE_TEST
+)
+
+gtest_discover_tests(pacing_test
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
+    DISCOVERY_MODE PRE_TEST
+)
+
 gtest_discover_tests(core_modules_integration_test
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
+    DISCOVERY_MODE PRE_TEST
+)
+
+gtest_discover_tests(ctr_test
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
+    DISCOVERY_MODE PRE_TEST
+)
+
+gtest_discover_tests(ctr_e2e_test
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
+    DISCOVERY_MODE PRE_TEST
+)
+
+# Ranker 模块测试
+add_executable(ranker_test
+    unit/ranker_test.cpp
+)
+
+target_link_libraries(ranker_test
+    PRIVATE
+        ranker
+        GTest::gtest
+        GTest::gtest_main
+)
+
+target_include_directories(ranker_test
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}
+)
+
+gtest_discover_tests(ranker_test
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
     DISCOVERY_MODE PRE_TEST
 )

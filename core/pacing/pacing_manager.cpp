@@ -289,6 +289,7 @@ bool PacingManager::adaptive_pacing_check(BudgetConfig& config, BudgetState& sta
 }
 
 void PacingManager::adaptive_pacing_update(BudgetConfig& config, BudgetState& state) {
+    (void)config;  // 保留参数供未来扩展使用
     // 这个方法由后台线程定期调用, 更新预测流量
     // 这里简化实现, 实际应该基于历史流量数据预测
 
@@ -322,6 +323,7 @@ void PacingManager::adaptive_pacing_update(BudgetConfig& config, BudgetState& st
 
 bool PacingManager::pid_control_check(BudgetConfig& config, BudgetState& state,
                                       double bid_price) {
+    (void)bid_price;  // PID 算法基于概率决策,暂不使用出价
     uint64_t now = current_time_ms();
 
     // 1. 计算当前进度
@@ -372,6 +374,8 @@ bool PacingManager::pid_control_check(BudgetConfig& config, BudgetState& state,
 }
 
 void PacingManager::pid_control_update(BudgetConfig& config, BudgetState& state) {
+    (void)config;
+    (void)state;
     // PID 参数已在 update_campaign_config 中初始化
     // 这个方法保留用于未来的 PID 参数自适应调整
 }

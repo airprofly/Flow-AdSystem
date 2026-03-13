@@ -394,6 +394,7 @@ namespace flow_ad
 
     bool AdDataGenerator::load_from_file(const std::string &file_path)
     {
+        (void)file_path;
         // TODO: 实现 JSON 解析
         std::cerr << "Load from file not yet implemented" << std::endl;
         return false;
@@ -401,6 +402,7 @@ namespace flow_ad
 
     bool AdDataGenerator::save_to_protobuf(const std::string &file_path) const
     {
+        (void)file_path;
         // TODO: 实现 Protocol Buffers 序列化
         std::cerr << "Protobuf export not yet implemented" << std::endl;
         return false;

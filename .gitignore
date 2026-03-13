@@ -1,8 +1,26 @@
 # 构建目录
 build/
+.build/
 
 # IDE
 .idea/
 
+# Python
+**/__pycache__/
+*.pyc
+
+# Data
+python/ctr_training/data/criteo
+
+python/ctr_training/criteo_data/**
+
+# models
+models/**
+python/ctr_training/models/**
+
+# checkpoint
+python/ctr_training/checkpoints/**
+
 # macOS
 .DS_Store
+
