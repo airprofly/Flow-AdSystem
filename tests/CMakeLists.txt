@@ -236,3 +236,25 @@ gtest_discover_tests(ranker_test
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
     DISCOVERY_MODE PRE_TEST
 )
+
+# OpenRTB Response 模块测试
+add_executable(openrtb_response_test
+    unit/openrtb_response_test.cpp
+)
+
+target_link_libraries(openrtb_response_test
+    PRIVATE
+        openrtb_response
+        GTest::gtest
+        GTest::gtest_main
+)
+
+target_include_directories(openrtb_response_test
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}
+)
+
+gtest_discover_tests(openrtb_response_test
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
+    DISCOVERY_MODE PRE_TEST
+)

@@ -69,6 +69,15 @@ set(RAPIDJSON_BUILD_DOC      OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(rapidjson)
 # RapidJSON 是纯头文件库，MakeAvailable 只需暴露 include 路径
 
+# nlohmann/json - 用于 JSON 序列化
+FetchContent_Declare(
+  nlohmann_json
+  GIT_REPOSITORY https://github.com/nlohmann/json.git
+  GIT_TAG        v3.11.3
+)
+
+FetchContent_MakeAvailable(nlohmann_json)
+
 # TBB (Threading Building Block) - 用于 C++17 并行算法
 option(FLOW_ADSYSTEM_ENABLE_TBB "Enable TBB for C++17 parallel algorithms" ON)
 

@@ -6,11 +6,14 @@
 
 ### 核心模块
 
-✅ **C++ 广告 ECPM 排序 (Ranker)** - 实时计算广告 eCPM 并排序 <br>
-✅ **C++ 广告展示频次控制** - 跟踪用户广告展示次数，支持时间窗口 <br>
-✅ **C++ 广告计划匀速消费 (Pacing)** - 控制广告投放速度，平滑预算消耗<br>
-✅ **C++ 广告投放索引** - 快速检索符合条件的广告<br>
-✅ **CTR 预估离线训练 (Python)** - PyTorch DeepFM 模型训练，支持 ONNX 导出<br>
+✅ **Step 1: 数据生成模块** - 10 万+ 广告池数据生成<br>
+✅ **Step 2: OpenRTB 2.5 协议解析器** - 解析 Bid Request<br>
+✅ **Step 3: 广告索引引擎** - 海选召回,快速检索符合条件的广告<br>
+✅ **Step 4: 广告展示频次控制** - 跟踪用户广告展示次数,支持时间窗口<br>
+✅ **Step 5: 广告计划匀速消费 (Pacing)** - 控制广告投放速度,平滑预算消耗<br>
+✅ **Step 6: CTR 预估模块 (DeepFM + ONNX Runtime)** - PyTorch 训练 + ONNX 推理<br>
+✅ **Step 7: ECPM 排序模块** - 实时计算广告 eCPM 并排序<br>
+✅ **Step 8: OpenRTB Response 响应包装模块** - 竞价决策 + Bid Response 构建<br>
 
 ## 📁 项目结构
 

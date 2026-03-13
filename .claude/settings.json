@@ -11,8 +11,8 @@
       "Bash(jq .campaigns[0])",
       "Read(//usr/**)",
       "Bash(pkg-config --modversion nlohmann_json)",
-      "Bash(cmake -B build -S .)",
-      "Bash(cmake --build build)",
+      "Bash(cmake -B .build/Debug -S .)",
+      "Bash(cmake --build .build/Debug)",
       "Bash(ctest --output-on-failure)",
       "Bash(ctest --output-on-failure -R \"AdIndexTest\")"
     ],

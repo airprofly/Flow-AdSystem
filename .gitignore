@@ -8,18 +8,10 @@ build/
 # Python
 **/__pycache__/
 *.pyc
-
-# Data
-python/ctr_training/data/criteo
-
-python/ctr_training/criteo_data/**
-
-# models
-models/**
-python/ctr_training/models/**
-
-# checkpoint
-python/ctr_training/checkpoints/**
+*.pt
+*.pth
+*.onnx
+*.data
 
 # macOS
 .DS_Store
