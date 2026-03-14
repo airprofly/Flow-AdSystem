@@ -19,10 +19,41 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Install system dependencies
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y cmake ninja-build g++ libssl-dev
+          sudo apt-get install -y cmake ninja-build g++ libssl-dev python3 python3-pip
+
+      - name: Install Python dependencies
+        run: |
+          pip3 install torch torchvision onnx onnxruntime numpy scikit-learn tqdm pandas
+
+      - name: Train DeepFM model with synthetic data
+        run: |
+          mkdir -p models python/ctr_training/checkpoints
+          python3 python/ctr_training/train_with_synthetic_data.py \
+            --num-samples 10000 \
+            --epochs 2 \
+            --batch-size 1024 \
+            --embed-dim 16 \
+            --output-dir python/ctr_training/checkpoints
+
+      - name: Export trained model to ONNX
+        run: |
+          python3 python/ctr_training/export_onnx.py \
+            --checkpoint python/ctr_training/checkpoints/best_model.pt \
+            --output models/deep_fm.onnx \
+            --opset 14 \
+            --no-verbose
+          echo "✓ ONNX model exported"
+
+      - name: Generate test data
+        run: |
+          mkdir -p data/data
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --target ad_generator --parallel $(nproc)
+          ./build/bin/ad_generator -n 100 -o data/data/ads_data.json
+          echo "✓ Test data generated"
 
       - name: Configure CMake
         run: |
