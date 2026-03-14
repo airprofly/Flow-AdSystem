@@ -91,6 +91,7 @@ if(FLOW_ADSYSTEM_ENABLE_TBB)
     # TBB 配置
     set(TBB_TEST OFF CACHE BOOL "" FORCE)
     set(TBB_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(TBB_STRICT OFF CACHE BOOL "" FORCE)
 
     FetchContent_MakeAvailable(tbb)
 endif()

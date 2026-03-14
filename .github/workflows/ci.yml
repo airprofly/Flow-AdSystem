@@ -27,7 +27,24 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y cmake ninja-build g++ libssl-dev
+          sudo apt-get install -y cmake ninja-build g++ libssl-dev ccache
+
+      - name: Restore model artifacts cache
+        id: model-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            python/ctr_training/checkpoints/best_model.pt
+            models/deep_fm.onnx
+          key: ${{ runner.os }}-py311-deepfm-${{ hashFiles('python/ctr_training/train_with_synthetic_data.py', 'python/ctr_training/train.py', 'python/ctr_training/export_onnx.py', 'python/ctr_training/*.py') }}
+
+      - name: Restore ccache
+        uses: actions/cache@v4
+        with:
+          path: ~/.ccache
+          key: ${{ runner.os }}-ccache-gcc-${{ hashFiles('CMakeLists.txt', 'core/**/CMakeLists.txt', 'tests/CMakeLists.txt', 'data/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-ccache-gcc-
 
       - name: Install Python dependencies
         run: |
@@ -35,6 +52,7 @@ jobs:
           python -m pip install torch torchvision onnx onnxruntime numpy scikit-learn tqdm pandas --quiet
 
       - name: Train DeepFM model with synthetic data
+        if: steps.model-cache.outputs.cache-hit != 'true'
         run: |
           mkdir -p models python/ctr_training/checkpoints
           python python/ctr_training/train_with_synthetic_data.py \
@@ -45,6 +63,7 @@ jobs:
             --output-dir python/ctr_training/checkpoints
 
       - name: Export trained model to ONNX
+        if: steps.model-cache.outputs.cache-hit != 'true'
         run: |
           test -f python/ctr_training/checkpoints/best_model.pt
           python python/ctr_training/export_onnx.py \
@@ -55,13 +74,18 @@ jobs:
           test -f models/deep_fm.onnx
           echo "✓ ONNX model exported"
 
+      - name: Show ccache stats (before build)
+        run: ccache --show-stats || true
+
       - name: Generate test data
         run: |
           mkdir -p data/data
           cmake -B build \
                 -G Ninja \
                 -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_CXX_STANDARD=20
+                -DCMAKE_CXX_STANDARD=20 \
+                -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+                -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
           cmake --build build --target ad_generator --parallel $(nproc)
           ./build/bin/ad_generator -n 100 -o data/data/ads_data.json
           test -f data/data/ads_data.json
@@ -80,3 +104,6 @@ jobs:
       - name: Run tests
         working-directory: build
         run: ctest --output-on-failure --parallel $(nproc)
+
+      - name: Show ccache stats (after build)
+        run: ccache --show-stats || true
