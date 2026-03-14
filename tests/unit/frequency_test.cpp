@@ -1,16 +1,18 @@
 // Author: airprofly
-#include <gtest/gtest.h>
-#include "frequency_manager.hpp"
 #include "async_impression_logger.hpp"
+#include "frequency_manager.hpp"
+#include <chrono>
+#include <gtest/gtest.h>
 #include <thread>
 #include <vector>
-#include <chrono>
 
 using namespace flow_ad::frequency;
 
-class FrequencyManagerTest : public ::testing::Test {
+class FrequencyManagerTest : public ::testing::Test
+{
 protected:
-    void SetUp() override {
+    void SetUp() override
+    {
         manager_ = std::make_unique<FrequencyManager>();
     }
 
@@ -18,7 +20,8 @@ protected:
 };
 
 // 基本测试: 频控拦截
-TEST_F(FrequencyManagerTest, BasicCapping) {
+TEST_F(FrequencyManagerTest, BasicCapping)
+{
     FrequencyCap cap;
     cap.hourly_limit = 3;
     cap.daily_limit = 10;
@@ -28,7 +31,8 @@ TEST_F(FrequencyManagerTest, BasicCapping) {
     uint64_t ad_id = 67890;
 
     // 前 3 次应该允许
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++)
+    {
         EXPECT_FALSE(manager_->is_capped(user_id, ad_id, cap));
         manager_->record_impression(user_id, ad_id, TimeWindow::HOUR);
     }
@@ -38,7 +42,8 @@ TEST_F(FrequencyManagerTest, BasicCapping) {
 }
 
 // 多个时间窗口独立测试
-TEST_F(FrequencyManagerTest, MultipleTimeWindows) {
+TEST_F(FrequencyManagerTest, MultipleTimeWindows)
+{
     FrequencyCap cap;
     cap.hourly_limit = 2;
     cap.daily_limit = 5;
@@ -48,7 +53,8 @@ TEST_F(FrequencyManagerTest, MultipleTimeWindows) {
     uint64_t ad_id = 67890;
 
     // 记录 3 次展示
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++)
+    {
         manager_->record_impression(user_id, ad_id, TimeWindow::HOUR);
         manager_->record_impression(user_id, ad_id, TimeWindow::DAY);
         manager_->record_impression(user_id, ad_id, TimeWindow::WEEK);
@@ -64,14 +70,15 @@ TEST_F(FrequencyManagerTest, MultipleTimeWindows) {
 
     // 测试不同的时间窗口限制
     FrequencyCap cap2;
-    cap2.hourly_limit = 10;  // 不限制小时
+    cap2.hourly_limit = 10; // 不限制小时
 
     // 小时不限制，应该不被拦截
     EXPECT_FALSE(manager_->is_capped(user_id, ad_id, cap2));
 }
 
 // 并发测试: 多线程竞态
-TEST_F(FrequencyManagerTest, ConcurrencyTest) {
+TEST_F(FrequencyManagerTest, ConcurrencyTest)
+{
     FrequencyCap cap;
     cap.hourly_limit = 10;
 
@@ -82,37 +89,41 @@ TEST_F(FrequencyManagerTest, ConcurrencyTest) {
     constexpr int requests_per_thread = 100;
 
     std::vector<std::thread> threads;
-    std::atomic<int> passed_count{0};
 
-    for (int t = 0; t < num_threads; t++) {
-        threads.emplace_back([this, user_id, ad_id, &cap, &passed_count]() {
+    for (int t = 0; t < num_threads; t++)
+    {
+        threads.emplace_back([this, user_id, ad_id]()
+                             {
             for (int i = 0; i < requests_per_thread; i++) {
-                if (!manager_->is_capped(user_id, ad_id, cap)) {
-                    passed_count.fetch_add(1);
-                    manager_->record_impression(user_id, ad_id, TimeWindow::HOUR);
-                }
-            }
-        });
+                manager_->record_impression(user_id, ad_id, TimeWindow::HOUR);
+            } });
     }
 
-    for (auto& t : threads) {
+    for (auto &t : threads)
+    {
         t.join();
     }
 
-    // 最多通过 10 次 (因为限制是 10)
-    // 允许少量误差 (最多 15 次)
-    EXPECT_LE(passed_count.load(), 15);
+    // 并发累加应准确无丢失
+    EXPECT_EQ(
+        manager_->get_count(user_id, ad_id, TimeWindow::HOUR),
+        static_cast<uint32_t>(num_threads * requests_per_thread));
+
+    // 达到上限后应被拦截
+    EXPECT_TRUE(manager_->is_capped(user_id, ad_id, cap));
 }
 
 // 不同用户独立计数测试
-TEST_F(FrequencyManagerTest, DifferentUsersIndependent) {
+TEST_F(FrequencyManagerTest, DifferentUsersIndependent)
+{
     FrequencyCap cap;
     cap.hourly_limit = 3;
 
     uint64_t ad_id = 67890;
 
     // 用户1: 记录 3 次
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++)
+    {
         manager_->record_impression(11111, ad_id, TimeWindow::HOUR);
     }
 
@@ -127,14 +138,16 @@ TEST_F(FrequencyManagerTest, DifferentUsersIndependent) {
 }
 
 // 不同广告独立计数测试
-TEST_F(FrequencyManagerTest, DifferentAdsIndependent) {
+TEST_F(FrequencyManagerTest, DifferentAdsIndependent)
+{
     FrequencyCap cap;
     cap.hourly_limit = 3;
 
     uint64_t user_id = 12345;
 
     // 广告1: 记录 3 次
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++)
+    {
         manager_->record_impression(user_id, 11111, TimeWindow::HOUR);
     }
 
@@ -149,7 +162,8 @@ TEST_F(FrequencyManagerTest, DifferentAdsIndependent) {
 }
 
 // 计数测试
-TEST_F(FrequencyManagerTest, GetCountTest) {
+TEST_F(FrequencyManagerTest, GetCountTest)
+{
     uint64_t user_id = 12345;
     uint64_t ad_id = 67890;
 
@@ -157,7 +171,8 @@ TEST_F(FrequencyManagerTest, GetCountTest) {
     EXPECT_EQ(manager_->get_count(user_id, ad_id, TimeWindow::HOUR), 0);
 
     // 记录 5 次
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++)
+    {
         manager_->record_impression(user_id, ad_id, TimeWindow::HOUR);
     }
 
@@ -166,14 +181,16 @@ TEST_F(FrequencyManagerTest, GetCountTest) {
 }
 
 // 无频控限制测试
-TEST_F(FrequencyManagerTest, NoCapTest) {
-    FrequencyCap cap;  // 所有限制都是 0
+TEST_F(FrequencyManagerTest, NoCapTest)
+{
+    FrequencyCap cap; // 所有限制都是 0
 
     uint64_t user_id = 12345;
     uint64_t ad_id = 67890;
 
     // 记录 100 次
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 100; i++)
+    {
         EXPECT_FALSE(manager_->is_capped(user_id, ad_id, cap));
         manager_->record_impression(user_id, ad_id, TimeWindow::HOUR);
     }
@@ -183,7 +200,8 @@ TEST_F(FrequencyManagerTest, NoCapTest) {
 }
 
 // 性能测试
-TEST_F(FrequencyManagerTest, PerformanceTest) {
+TEST_F(FrequencyManagerTest, PerformanceTest)
+{
     FrequencyCap cap;
     cap.hourly_limit = 5;
     cap.daily_limit = 20;
@@ -191,9 +209,10 @@ TEST_F(FrequencyManagerTest, PerformanceTest) {
     constexpr int num_iterations = 100000;
     auto start = std::chrono::high_resolution_clock::now();
 
-    for (int i = 0; i < num_iterations; i++) {
-        uint64_t user_id = i % 1000;  // 1000 个不同用户
-        uint64_t ad_id = i % 10000;   // 10000 个不同广告
+    for (int i = 0; i < num_iterations; i++)
+    {
+        uint64_t user_id = i % 1000; // 1000 个不同用户
+        uint64_t ad_id = i % 10000;  // 10000 个不同广告
         manager_->is_capped(user_id, ad_id, cap);
     }
 
@@ -208,7 +227,8 @@ TEST_F(FrequencyManagerTest, PerformanceTest) {
 }
 
 // 统计测试
-TEST_F(FrequencyManagerTest, StatsTest) {
+TEST_F(FrequencyManagerTest, StatsTest)
+{
     auto stats = manager_->get_stats();
 
     EXPECT_EQ(stats.total_records, 0);
@@ -228,19 +248,22 @@ TEST_F(FrequencyManagerTest, StatsTest) {
 }
 
 // 异步记录器测试
-class AsyncImpressionLoggerTest : public ::testing::Test {
+class AsyncImpressionLoggerTest : public ::testing::Test
+{
 protected:
-    void SetUp() override {
+    void SetUp() override
+    {
         manager_ = std::make_shared<FrequencyManager>();
         logger_ = std::make_unique<AsyncImpressionLogger>(
             manager_,
-            10000,   // queue_size
-            100,     // batch_size
-            50       // flush_interval_ms
+            10000, // queue_size
+            100,   // batch_size
+            50     // flush_interval_ms
         );
     }
 
-    void TearDown() override {
+    void TearDown() override
+    {
         // 等待队列处理完成
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
@@ -250,12 +273,14 @@ protected:
 };
 
 // 异步记录基本测试
-TEST_F(AsyncImpressionLoggerTest, BasicRecordTest) {
+TEST_F(AsyncImpressionLoggerTest, BasicRecordTest)
+{
     uint64_t user_id = 12345;
     uint64_t ad_id = 67890;
 
     // 记录 5 次
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++)
+    {
         EXPECT_TRUE(logger_->record_impression(user_id, ad_id, TimeWindow::HOUR));
     }
 
@@ -268,7 +293,8 @@ TEST_F(AsyncImpressionLoggerTest, BasicRecordTest) {
 }
 
 // 异步记录器统计测试
-TEST_F(AsyncImpressionLoggerTest, StatsTest) {
+TEST_F(AsyncImpressionLoggerTest, StatsTest)
+{
     auto stats = logger_->get_stats();
 
     EXPECT_EQ(stats.queued_count, 0);
@@ -276,7 +302,8 @@ TEST_F(AsyncImpressionLoggerTest, StatsTest) {
     EXPECT_EQ(stats.dropped_count, 0);
 
     // 记录一些数据
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++)
+    {
         logger_->record_impression(i, i * 100, TimeWindow::HOUR);
     }
 
@@ -285,7 +312,8 @@ TEST_F(AsyncImpressionLoggerTest, StatsTest) {
 }
 
 // 主函数
-int main(int argc, char** argv) {
+int main(int argc, char **argv)
+{
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
