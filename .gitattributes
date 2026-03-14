@@ -68,3 +68,9 @@
 *.crt binary
 *.key binary
 *.keystore binary
+
+# 模型文件
+*.pt binary
+*.pth binary
+*.onnx binary
+*.data binary

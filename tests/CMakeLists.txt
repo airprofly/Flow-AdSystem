@@ -258,3 +258,40 @@ gtest_discover_tests(openrtb_response_test
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
     DISCOVERY_MODE PRE_TEST
 )
+
+    # ============================================================
+    # 全链路集成测试: 所有 8 个模块协同工作
+    # ============================================================
+    add_executable(full_pipeline_test
+        integration/integration_test_full_pipeline.cpp
+    )
+
+    target_link_libraries(full_pipeline_test
+        PRIVATE
+            openrtb_parser
+            openrtb_response
+            ad_index
+            frequency_control
+            pacing
+            ctr_lib
+            ranker
+            GTest::gtest
+            GTest::gtest_main
+    )
+
+    target_include_directories(full_pipeline_test
+        PRIVATE
+            ${CMAKE_SOURCE_DIR}
+            ${CMAKE_SOURCE_DIR}/core/pacing
+            ${CMAKE_SOURCE_DIR}/core/frequency
+    )
+
+    target_compile_definitions(full_pipeline_test
+        PRIVATE
+            FLOW_ADSYSTEM_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+    )
+
+    gtest_discover_tests(full_pipeline_test
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
+        DISCOVERY_MODE PRE_TEST
+    )

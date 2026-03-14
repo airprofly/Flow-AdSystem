@@ -435,7 +435,7 @@ config.num_advertisers = 1000;
 - [架构设计](../../.claude/commands/schema.md)
 - [OpenRTB 协议规范](https://www.iab.com/guidelines/openrtb/)
 - [IAB OpenRTB 2.5 规范 (PDF)](https://www.iab.com/wp-content/uploads/2016/03/OpenRTB-API-Specification-Version-2-5-FINAL.pdf)
-- [IAB Tech Lab - 2025更新建议](https://iabtechlab.com/the-openrtb-updates-you-should-adopt-in-2025-courtesy-of-iab-tech-lab/)
+- [IAB Tech Lab - 2025更新建议](https://iabtechlab.com/the-openrtb-updates-that-you-should-adopt-in-2025-courtesy-of-iab-tech-lab/)
 
 ---
 
@@ -443,6 +443,6 @@ config.num_advertisers = 1000;
 
 **Made with ❤️ by [airprofly](https://github.com/airprofly)**
 
-**FastMatch-Ad 广告投放系统** · OpenRTB 协议 · 高性能广告技术
+**Flow-AdSystem 广告投放系统** · OpenRTB 协议 · 高性能广告技术
 
 </div>
